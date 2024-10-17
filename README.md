@@ -18,3 +18,5 @@ Supported LLMs:
 ### Frontend
 - `npm install`
 - `npm start`
+
+<img width="1512" alt="image" src="https://github.com/user-attachments/assets/3645808e-400a-47d3-8dad-417de0d6f2db">
