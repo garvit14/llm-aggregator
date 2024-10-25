@@ -5,7 +5,11 @@ import { Claude } from "./llms/claude";
 import { Gemini } from "./llms/gemini";
 import { Llama } from "./llms/llama";
 import { LLM } from "./llms/llm.interface";
-require('dotenv').config();
+import { PromptRole } from "./types/prompt";
+import { Repo } from "./db/repo";
+import { LLMEnum } from "./types/llm";
+import { LLMFactory } from "./llms/factory";
+require("dotenv").config();
 const cors = require("cors");
 
 // class Main {
@@ -51,6 +55,8 @@ const port = 6765;
 app.use(cors());
 app.use(express.json());
 
+const llmFactory = new LLMFactory();
+
 app.get("/ask", async (req, res) => {
     // const { prompt, llm } = req.body;
     const prompt = req.query.prompt;
@@ -60,26 +66,30 @@ app.get("/ask", async (req, res) => {
         return res.status(400).json({ error: "Prompt and LLM are required" });
     }
 
-    let llmInstance: LLM;
-    switch (llm.toLowerCase()) {
-        case "chatgpt":
-            llmInstance = new ChatGPT();
-            break;
-        case "claude":
-            llmInstance = new Claude();
-            break;
-        case "gemini":
-            llmInstance = new Gemini();
-            break;
-        case "llama":
-            llmInstance = new Llama();
-            break;
-        default:
-            return res.status(400).json({ error: "Invalid LLM specified" });
-    }
+    // const repo = new Repo();
+    let llmInstance = llmFactory.createLLM(llm);
+    // switch (llm.toLowerCase()) {
+    //     case "chatgpt":
+    //         llmInstance = new ChatGPT();
+    //         break;
+    //     case "claude":
+    //         llmInstance = new Claude();
+    //         break;
+    //     case "gemini":
+    //         llmInstance = new Gemini(repo);
+    //         break;
+    //     case "llama":
+    //         llmInstance = new Llama();
+    //         break;
+    //     default:
+    //         return res.status(400).json({ error: "Invalid LLM specified" });
+    // }
 
     try {
-        const response = await llmInstance.ask({ message: prompt });
+        const response = await llmInstance.ask({
+            role: PromptRole.USER,
+            message: prompt,
+        });
         res.json({ response: response.response });
     } catch (error) {
         res.status(500).json({ error: "Failed to get response from LLM" });
@@ -95,25 +105,29 @@ app.get("/ask-stream", async (req, res) => {
         return res.status(400).json({ error: "Prompt and LLM are required" });
     }
 
-    let llmInstance: LLM;
-    switch (llm.toLowerCase()) {
-        case "chatgpt":
-            llmInstance = new ChatGPT();
-            break;
-        case "claude":
-            llmInstance = new Claude();
-            break;
-        case "gemini":
-            llmInstance = new Gemini();
-            break;
-        case "llama":
-            llmInstance = new Llama();
-            break;
-        default:
-            return res.status(400).json({ error: "Invalid LLM specified" });
-    }
+    let llmInstance = llmFactory.createLLM(llm);
+    // const repo = new Repo();
+    // switch (llm.toLowerCase()) {
+    //     case "chatgpt":
+    //         llmInstance = new ChatGPT();
+    //         break;
+    //     case "claude":
+    //         llmInstance = new Claude();
+    //         break;
+    //     case "gemini":
+    //         llmInstance = new Gemini(repo);
+    //         break;
+    //     case "llama":
+    //         llmInstance = new Llama();
+    //         break;
+    //     default:
+    //         return res.status(400).json({ error: "Invalid LLM specified" });
+    // }
 
-    const streamResponse = llmInstance.askStream({ message: prompt });
+    const streamResponse = llmInstance.askStream({
+        role: PromptRole.USER,
+        message: prompt,
+    });
 
     // Set headers to allow for streaming
     // res.setHeader('Content-Type', 'text/event-stream');
@@ -137,6 +151,37 @@ app.get("/ask-stream", async (req, res) => {
     res.end();
 });
 
+app.post("/chat", async (req, res) => {
+    const body = req.body;
+    const llm = body.llm;
+    const chatID = body.chatID;
+    const prompt = body.prompt;
+
+    const llmInstance = llmFactory.createLLM(llm);
+
+    const streamResponse = llmInstance.chatStream(prompt, chatID);
+
+    console.log("streamResponse", streamResponse);
+
+    const stream = ndjson.stringify();
+    stream.pipe(res);
+    for await (const response of streamResponse) {
+        stream.write(response);
+    }
+
+    res.end();
+});
+
+app.post("/message/like", async (req, res) => {
+    const messageID = req.query.messageID;
+    const repo = new Repo();
+    await repo.likeMessage(messageID);
+    res.json({ success: true });
+});
+
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
+    // verify DB connection
+    const repo = new Repo();
+    repo.checkConnection();
 });

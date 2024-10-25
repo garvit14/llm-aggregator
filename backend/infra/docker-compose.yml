@@ -1,0 +1,19 @@
+version: "3.7"
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: postgres
+    command: postgres -c 'max_connections=500'
+    restart: always
+    ports:
+      - "59330:5432"
+    volumes:
+      - /Users/garvitgupta/Garvit/sandbox/llm-analysis/pg-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: "test_user"
+      POSTGRES_PASSWORD: "test"
+      POSTGRES_DB: "test-db"
+    deploy:
+      resources:
+        limits:
+          cpus: "3"
