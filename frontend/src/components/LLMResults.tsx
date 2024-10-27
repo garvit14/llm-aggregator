@@ -7,7 +7,7 @@ import Grid from "@mui/material/Grid2";
 
 interface LLMResultsProps {
   results: ResponseState;
-}
+} 
 
 const LLMResults: React.FC<LLMResultsProps> = ({ results }) => {
   console.log(results);

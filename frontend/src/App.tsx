@@ -3,8 +3,8 @@ import React, { useState } from "react";
 import PromptInput from "./components/PromptInput";
 import LLMResults from "./components/LLMResults";
 import { Typography, Box } from "@mui/material";
-
-// const readline = require('linebyline');
+import { Chat } from "./components/Chat";
+import Grid from "@mui/material/Grid2";
 
 interface LLMResponse {
     llmName: string;
@@ -12,7 +12,7 @@ interface LLMResponse {
 }
 
 // const llms = ["chatgpt", "claude", "gemini", "llama"];
-const llms = ["gemini", "llama"];
+const llms = ["llama"];
 
 interface LLMState {
     llmName: string;
@@ -31,6 +31,7 @@ const App: React.FC = () => {
         initialState[llm] = "";
     }
     const [response, setResponse] = useState<ResponseState>(initialState);
+    const [initialPrompt, setInitialPrompt] = useState<string>("");
 
     async function streamNDJSON(prompt: string, llm: string) {
         const url = `http://localhost:6765/ask-stream?llm=${llm}&prompt=${prompt}`;
@@ -76,17 +77,18 @@ const App: React.FC = () => {
     }
 
     const handlePromptSubmit = async (prompt: string) => {
-        setResponse(initialState);
-        for (const llm of llms) {
-            streamNDJSON(prompt, llm);
-        }
+        // setResponse(initialState);
+        // for (const llm of llms) {
+        //     streamNDJSON(prompt, llm);
+        // }
+        setInitialPrompt(prompt);
     };
 
     return (
         <Box sx={{ padding: 2 }}>
             <Box textAlign="center" mt={4}>
                 <Typography variant="h4" component="h1" gutterBottom>
-                    LLM Comparison Tool
+                    LLM Aggregator
                 </Typography>
             </Box>
 
@@ -95,11 +97,26 @@ const App: React.FC = () => {
             </Box>
 
             <Box sx={{ maxWidth: "100%", padding: 2 }}>
-                {Object.keys(response).length > 0 && (
+                <Grid container spacing={2} direction="row">
+                    {llms.map((llm, index) => {
+                        return (
+                            <Grid size={12 / llms.length}>
+                                <Chat
+                                    llmName={llm}
+                                    initialPrompt={initialPrompt}
+                                />
+                            </Grid>
+                        );
+                    })}
+                </Grid>
+
+                {/* {Object.keys(response).length > 0 && (
                     <Box mt={4} sx={{ maxWidth: "100%" }}>
                         <LLMResults results={response} />
                     </Box>
-                )}
+                )} */}
+                {/* <Chat llmName="gemini" initialPrompt={initialPrompt} />
+                <Chat llmName="llama" initialPrompt={initialPrompt} /> */}
             </Box>
         </Box>
     );
