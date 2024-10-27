@@ -18,7 +18,7 @@ Supported LLMs:
    ```
    docker compose up --build -d
    ```
-   - On first this command will automatically create schemas
+   - On first run this command will automatically create schemas
    - Postgres data will be stored in _pg_data_ folder so data will not be lost even if container stops.
 
 ## 2. Start Backend
@@ -50,6 +50,5 @@ Supported LLMs:
 3. `serve -s build`
 
 ## Demo
+
 https://github.com/user-attachments/assets/58b638c3-4009-41ff-a70a-a4ba91afdb23
-
-
