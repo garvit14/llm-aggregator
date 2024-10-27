@@ -162,6 +162,10 @@ export const Chat = ({ llmName, initialPrompt }: ChatProps) => {
         if (!initialPrompt) {
             return;
         }
+        // reset history
+        setPrompt("");
+        setMessages([]);
+        setChatID(undefined);
         // send initial prompt
         sendNewMessage(initialPrompt);
     }, [initialPrompt]);
@@ -172,7 +176,7 @@ export const Chat = ({ llmName, initialPrompt }: ChatProps) => {
                 <Box
                     py={2}
                     px={2}
-                    bgcolor="#e6e1e1"
+                    bgcolor="#222324"
                     borderRadius={6}
                     width="fit-content"
                     maxWidth="70%"
