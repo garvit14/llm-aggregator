@@ -11,8 +11,8 @@ import {
 import { Chat } from "./components/Chat";
 import Grid from "@mui/material/Grid2";
 
-// const llms = ["chatgpt", "claude", "gemini", "llama"];
-const llms = ["llama"];
+const llms = ["chatgpt", "claude", "gemini", "llama"];
+// const llms = ["llama"];
 
 const darkTheme = createTheme({
     palette: {

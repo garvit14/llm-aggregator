@@ -296,7 +296,9 @@ export const Chat = ({ llmName, initialPrompt }: ChatProps) => {
                     justifyContent="space-between"
                     alignItems="center"
                 >
-                    <Typography variant="h5">{llmName}</Typography>
+                    <Typography variant="h5" textTransform="uppercase">
+                        {llmName}
+                    </Typography>
                     <IconButton onClick={() => setOpen(true)}>
                         <FullscreenIcon />
                     </IconButton>
@@ -310,10 +312,14 @@ export const Chat = ({ llmName, initialPrompt }: ChatProps) => {
                 fullWidth
                 maxWidth="md"
             >
-                <DialogTitle>{llmName}</DialogTitle>
+                <DialogTitle>
+                    <Typography variant="h5" textTransform="uppercase">
+                        {llmName}
+                    </Typography>
+                </DialogTitle>
                 <DialogContent>{content}</DialogContent>
                 <CardActions>
-                    <Button onClick={() => setOpen(true)}>Close</Button>
+                    <Button onClick={() => setOpen(false)}>Close</Button>
                 </CardActions>
             </Dialog>
         </Box>
