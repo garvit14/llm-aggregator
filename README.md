@@ -50,5 +50,6 @@ Supported LLMs:
 3. `serve -s build`
 
 ## Demo
+https://github.com/user-attachments/assets/58b638c3-4009-41ff-a70a-a4ba91afdb23
 
-<img width="1512" alt="image" src="https://github.com/user-attachments/assets/3645808e-400a-47d3-8dad-417de0d6f2db">
+
