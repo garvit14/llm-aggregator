@@ -11,6 +11,7 @@ create table chat_message (
 	message varchar not null,
 	role varchar not null, -- user / model
 	is_liked boolean not null default false, -- valid only of role is model
+	is_disliked boolean not null default false, -- valid only of role is model
 	created_at timestamptz not null default now(),
 	updated_at timestamptz not null default now(),
 	

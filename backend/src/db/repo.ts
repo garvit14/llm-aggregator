@@ -20,6 +20,7 @@ export interface Message {
     message: string;
     role: PromptRole;
     is_liked: boolean;
+    is_disliked: boolean;
 }
 
 export class Repo {
@@ -63,6 +64,7 @@ export class Repo {
             message,
             role,
             is_liked: false,
+            is_disliked: false,
         };
         await this.db(TableNames.CHAT_MESSAGE).insert(messageEntity);
         return messageID;
@@ -72,6 +74,12 @@ export class Repo {
         await this.db(TableNames.CHAT_MESSAGE)
             .where({ id: messageId })
             .update({ is_liked: true });
+    }
+
+    async dislikeMessage(messageId: string) {
+        await this.db<Message>(TableNames.CHAT_MESSAGE)
+            .where({ id: messageId })
+            .update({ is_disliked: true });
     }
 
     async getMessages(chatId: string): Promise<Message[]> {

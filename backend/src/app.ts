@@ -151,15 +151,27 @@ app.get("/ask-stream", async (req, res) => {
     res.end();
 });
 
-app.post("/chat", async (req, res) => {
-    const body = req.body;
-    const llm = body.llm;
-    const chatID = body.chatID;
-    const prompt = body.prompt;
+app.get("/chat", async (req, res) => {
+    // const body = req.body;
+    // console.log("chat body", body);
+
+    const llm = req.query.llm;
+    const chatID = req.query.chatID;
+    const prompt = req.query.prompt;
+
+    // const llm = body.llm;
+    // const chatID = body.chatID;
+    // const prompt = body.prompt;
 
     const llmInstance = llmFactory.createLLM(llm);
 
-    const streamResponse = llmInstance.chatStream(prompt, chatID);
+    const streamResponse = llmInstance.chatStream(
+        {
+            message: prompt,
+            role: PromptRole.USER,
+        },
+        chatID,
+    );
 
     console.log("streamResponse", streamResponse);
 
@@ -176,6 +188,13 @@ app.post("/message/like", async (req, res) => {
     const messageID = req.query.messageID;
     const repo = new Repo();
     await repo.likeMessage(messageID);
+    res.json({ success: true });
+});
+
+app.post("/message/dislike", async (req, res) => {
+    const messageID = req.query.messageID;
+    const repo = new Repo();
+    await repo.dislikeMessage(messageID);
     res.json({ success: true });
 });
 
