@@ -71,15 +71,15 @@ export class Repo {
     }
 
     async likeMessage(messageId: string) {
-        await this.db(TableNames.CHAT_MESSAGE)
+        await this.db<Message>(TableNames.CHAT_MESSAGE)
             .where({ id: messageId })
-            .update({ is_liked: true });
+            .update({ is_liked: true, is_disliked: false });
     }
 
     async dislikeMessage(messageId: string) {
         await this.db<Message>(TableNames.CHAT_MESSAGE)
             .where({ id: messageId })
-            .update({ is_disliked: true });
+            .update({ is_disliked: true, is_liked: false });
     }
 
     async getMessages(chatId: string): Promise<Message[]> {

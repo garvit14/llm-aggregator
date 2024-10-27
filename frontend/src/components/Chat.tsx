@@ -157,7 +157,6 @@ export const Chat = ({ llmName, initialPrompt }: ChatProps) => {
         streamChat(setChatID, setMessages, msg, llmName, chatID);
     };
 
-    // TODO: somehow avoid useEffect
     React.useEffect(() => {
         console.log("initialPrompt", initialPrompt);
         if (!initialPrompt) {
