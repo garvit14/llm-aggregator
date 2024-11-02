@@ -1,4 +1,4 @@
-# LLM Comparator
+# LLM Aggregator
 
 This is a very simple personal use LLM aggregator that helps in passing same prompts to multiple LLMs and then viewing their output in UI and then take a call which one is better.
 
