@@ -66,12 +66,12 @@ app.get("/ask-stream", async (req, res) => {
     res.end();
 });
 
-app.get(
+app.post(
     "/chat",
     asyncHandler(async (req, res) => {
-        const llm = req.query.llm;
-        const chatID = req.query.chatID;
-        const prompt = req.query.prompt;
+        const llm = req.body.llm;
+        const chatID = req.body.chatID;
+        const prompt = req.body.prompt;
 
         const llmInstance = llmFactory.createLLM(llm);
 
@@ -82,8 +82,6 @@ app.get(
             },
             chatID,
         );
-
-        console.log("streamResponse", streamResponse);
 
         const stream = ndjson.stringify();
         stream.pipe(res);

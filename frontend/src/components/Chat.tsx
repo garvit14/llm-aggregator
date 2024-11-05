@@ -64,11 +64,18 @@ async function streamChat(
     chatID?: string,
 ) {
     console.log("streaming chat...");
-    let url = `http://localhost:6765/chat?llm=${llm}&prompt=${prompt}`;
-    if (chatID) {
-        url += `&chatID=${chatID}`;
-    }
-    const response = await fetch(url);
+    let url = `http://localhost:6765/chat`;
+    const response = await fetch(url, {
+        method: "POST",
+        body: JSON.stringify({
+            llm: llm,
+            prompt: prompt,
+            chatID: chatID,
+        }),
+        headers: {
+            "Content-Type": "application/json",
+        },
+    });
     if (!response.ok || response.body === null) {
         console.error("Error while making API call");
         return;
