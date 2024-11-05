@@ -19,6 +19,7 @@ import ThumbUpFilledIcon from "@mui/icons-material/ThumbUp";
 import ThumbDownFilledIcon from "@mui/icons-material/ThumbDown";
 import ThumbUpIcon from "@mui/icons-material/ThumbUpAltOutlined";
 import ThumbDownIcon from "@mui/icons-material/ThumbDownAltOutlined";
+import Grid from "@mui/material/Grid2";
 
 enum Role {
     USER = "user",
@@ -31,6 +32,7 @@ interface Message {
     messageID?: string;
     isLiked: boolean;
     isDisliked: boolean;
+    chatID?: string;
 }
 
 interface ChatProps {
@@ -123,6 +125,7 @@ async function streamChat(
                     setMessages((prev: Message[]) => {
                         prev[prev.length - 1].text = msg;
                         prev[prev.length - 1].messageID = jsonObject.messageID;
+                        prev[prev.length - 1].chatID = jsonObject.chatID;
                         return [...prev];
                     });
                     if (!chatID) {
@@ -158,6 +161,7 @@ export const Chat = ({ llmName, initialPrompt }: ChatProps) => {
                     role: Role.USER,
                     isLiked: false,
                     isDisliked: false,
+                    chatID,
                 },
             ];
         });
@@ -180,18 +184,26 @@ export const Chat = ({ llmName, initialPrompt }: ChatProps) => {
     const UserMessage = ({ msg }: { msg: Message }) => {
         return (
             <Box display="flex" justifyContent="flex-end" marginBottom={1}>
-                <Box
-                    py={2}
-                    px={2}
-                    bgcolor="#222324"
-                    borderRadius={6}
-                    width="fit-content"
-                    maxWidth="70%"
-                >
-                    <Typography style={{ whiteSpace: "pre-line" }}>
-                        {msg.text}
-                    </Typography>
-                </Box>
+                <Grid container direction="column" alignItems="flex-end">
+                    <Grid>
+                        <Box
+                            py={2}
+                            px={2}
+                            bgcolor="#222324"
+                            borderRadius={6}
+                            marginBottom="10px"
+                        >
+                            <Typography style={{ whiteSpace: "pre-line" }}>
+                                {msg.text}
+                            </Typography>
+                        </Box>
+                    </Grid>
+                    <Grid>
+                        <Typography fontSize="13px" color="darkgray">
+                            Chat ID: {msg.chatID ?? ""}
+                        </Typography>
+                    </Grid>
+                </Grid>
             </Box>
         );
     };
@@ -204,6 +216,9 @@ export const Chat = ({ llmName, initialPrompt }: ChatProps) => {
         return (
             <Box>
                 <ReactMarkdown>{msg.text}</ReactMarkdown>
+                <Typography fontSize="13px" color="darkgray">
+                    Chat ID: {msg.chatID ?? ""}
+                </Typography>
                 <Box>
                     <IconButton
                         onClick={() =>
