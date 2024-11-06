@@ -8,7 +8,7 @@ services:
     ports:
       - "59330:5432"
     volumes:
-      - /Users/garvitgupta/Garvit/sandbox/llm-analysis/pg-data:/var/lib/postgresql/data
+      - ../../pg-data:/var/lib/postgresql/data
       - ../src/db/migrations/:/docker-entrypoint-initdb.d
     environment:
       POSTGRES_USER: "test_user"

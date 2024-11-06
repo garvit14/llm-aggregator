@@ -45,7 +45,7 @@ Supported LLMs:
 
 ### For Usage:
 
-1. `npm i -g server` - needs to be done only first time
+1. `npm i -g serve` - needs to be done only first time
 2. `npm run build`
 3. `serve -s build`
 
