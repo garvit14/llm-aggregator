@@ -3,6 +3,11 @@ import ndjson from "ndjson";
 import { PromptRole } from "./types/prompt";
 import { Repo } from "./db/repo";
 import { LLMFactory } from "./llms/factory";
+import { LLMEnum } from "./types/llm";
+import { CHATGPT_VERSIONS } from "./llms/chat-gpt";
+import { GEMINI_VERSIONS } from "./llms/gemini";
+import { LLAMA_VERSIONS } from "./llms/llama";
+import { CLAUDE_VERSIONS } from "./llms/claude";
 require("dotenv").config();
 const cors = require("cors");
 
@@ -18,6 +23,7 @@ const asyncHandler = (fn) => (req, res, next) => {
     Promise.resolve(fn(req, res, next)).catch(next);
 };
 
+// Deprecated
 app.get("/ask", async (req, res) => {
     const prompt = req.query.prompt;
     const llm = req.query.llm;
@@ -39,6 +45,7 @@ app.get("/ask", async (req, res) => {
     }
 });
 
+// Deprecated
 app.get("/ask-stream", async (req, res) => {
     const prompt = req.query.prompt;
     const llm = req.query.llm;
@@ -70,10 +77,11 @@ app.post(
     "/chat",
     asyncHandler(async (req, res) => {
         const llm = req.body.llm;
+        const llmVersion = req.body.llmVersion;
         const chatID = req.body.chatID;
         const prompt = req.body.prompt;
 
-        const llmInstance = llmFactory.createLLM(llm);
+        const llmInstance = llmFactory.createLLM(llm, llmVersion);
 
         const streamResponse = llmInstance.chatStream(
             {
@@ -112,6 +120,31 @@ app.post(
         res.json({ success: true });
     }),
 );
+
+app.get("/supported-llms", async (req, res) => {
+    const supportedLLMs = [
+        {
+            name: LLMEnum.CHATGPT,
+            versions: CHATGPT_VERSIONS,
+        },
+        {
+            name: LLMEnum.GEMINI,
+            versions: GEMINI_VERSIONS,
+        },
+        {
+            name: LLMEnum.LLAMA,
+            versions: LLAMA_VERSIONS,
+        },
+        {
+            name: LLMEnum.CLAUDE,
+            versions: CLAUDE_VERSIONS,
+        },
+    ];
+
+    res.json({ supportedLLMs });
+
+    res.end();
+});
 
 // Error handling middleware
 app.use((err, req, res, next) => {

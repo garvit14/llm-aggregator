@@ -7,25 +7,29 @@ import { ChatterLLMTemplate } from "./chatter-llm-template";
 import { LLM } from "./llm.interface";
 import Anthropic from "@anthropic-ai/sdk";
 
-// todo: fix code duplication
+export const CLAUDE_VERSIONS = ["claude-3-5-sonnet-20240620"];
+export const CLAUDE_DEFAULT_VERSION = "claude-3-5-sonnet-20240620";
 
+// todo: fix code duplication
 export class Claude implements LLM {
     private llmName = LLMEnum.CLAUDE;
     private anthropic: Anthropic;
     private chatterLLMTemplate: ChatterLLMTemplate;
+    private version: string;
 
-    constructor(repo: Repo) {
+    constructor(repo: Repo, version: string) {
         const apiKey = process.env.CLAUDE_API_KEY;
         this.anthropic = new Anthropic({
             apiKey: apiKey,
         });
         this.chatterLLMTemplate = new ChatterLLMTemplate(repo);
+        this.version = version;
     }
 
     async ask(prompt: Prompt): Promise<PromptResponse> {
         try {
             const response = await this.anthropic.messages.create({
-                model: "claude-3-5-sonnet-20240620",
+                model: this.version,
                 max_tokens: 1024,
                 messages: [{ role: "user", content: prompt.message }],
             });
@@ -46,7 +50,7 @@ export class Claude implements LLM {
     async *askStream(prompt: Prompt): AsyncGenerator<PromptResponse> {
         try {
             const response = this.anthropic.messages.stream({
-                model: "claude-3-5-sonnet-20240620",
+                model: this.version,
                 messages: [{ role: "user", content: prompt.message }],
                 max_tokens: 1024,
                 stream: true,
@@ -80,6 +84,7 @@ export class Claude implements LLM {
                     throw new Error("Invalid role");
             }
         };
+        const version = this.version;
         const client = this.anthropic;
         const streamResponse = await this.chatterLLMTemplate.chatStream(
             this.llmName,
@@ -102,7 +107,7 @@ export class Claude implements LLM {
                     });
 
                     const response = client.messages.stream({
-                        model: "claude-3-5-sonnet-20240620",
+                        model: version,
                         messages: messages,
                         stream: true,
                         max_tokens: 8192,

@@ -15,17 +15,23 @@ import {
 import { Readable } from "stream";
 import { ChatterLLMTemplate } from "./chatter-llm-template";
 
+export const GEMINI_VERSIONS = ["gemini-1.5-pro"];
+export const GEMINI_DEFAULT_VERSION = "gemini-1.5-pro";
+
 export class Gemini implements LLM {
     private llmName = LLMEnum.GEMINI;
     private repo: Repo;
     private chatterLLMTemplate: ChatterLLMTemplate;
-    constructor(repo: Repo) {
+    private readonly version: string;
+
+    constructor(repo: Repo, version: string) {
         this.repo = repo;
         this.chatterLLMTemplate = new ChatterLLMTemplate(repo);
+        this.version = version;
     }
 
     async ask(prompt: Prompt): Promise<PromptResponse> {
-        const model = this.initModel();
+        const model = this.initModel(this.version);
         try {
             const result = await model.generateContent(prompt.message);
             const response = result.response.text();
@@ -40,7 +46,7 @@ export class Gemini implements LLM {
 
     // generator function
     async *askStream(prompt: Prompt): AsyncGenerator<PromptResponse> {
-        const model = this.initModel();
+        const model = this.initModel(this.version);
         try {
             const result = await model.generateContentStream(prompt.message);
             for await (const chunk of result.stream) {
@@ -64,6 +70,7 @@ export class Gemini implements LLM {
         chatID?: string,
     ): AsyncGenerator<ChatPromptResponse> {
         const initModel = this.initModel;
+        const version = this.version;
         const streamResponse = await this.chatterLLMTemplate.chatStream(
             this.llmName,
             prompt,
@@ -75,7 +82,7 @@ export class Gemini implements LLM {
                         role: msg.role,
                         parts: [{ text: msg.message }],
                     }));
-                    const model = initModel();
+                    const model = initModel(version);
                     const chat = model.startChat({ history: historyForAPI });
                     const result = await chat.sendMessageStream(prompt.message);
                     for await (const chunk of result.stream) {
@@ -91,10 +98,10 @@ export class Gemini implements LLM {
         }
     }
 
-    private initModel(): GenerativeModel {
+    private initModel(version: string): GenerativeModel {
         const apiKey = process.env.GEMINI_API_KEY;
         const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
+        const model = genAI.getGenerativeModel({ model: version });
         return model;
     }
 }

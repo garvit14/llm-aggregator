@@ -7,24 +7,29 @@ import { ChatterLLMTemplate } from "./chatter-llm-template";
 import { LLM } from "./llm.interface";
 import ollama from "ollama";
 
+export const LLAMA_VERSIONS = ["llama3.2"];
+export const LLAMA_DEFAULT_VERSION = "llama3.2";
+
 // todo: remove code duplication
 export class Llama implements LLM {
     private llmName = LLMEnum.LLAMA;
     private anthropic: Anthropic;
     private chatterLLMTemplate: ChatterLLMTemplate;
+    private readonly version: string;
 
-    constructor(repo: Repo) {
+    constructor(repo: Repo, version: string) {
         const apiKey = process.env.CLAUDE_API_KEY;
         this.anthropic = new Anthropic({
             apiKey: apiKey,
         });
         this.chatterLLMTemplate = new ChatterLLMTemplate(repo);
+        this.version = version;
     }
 
     async ask(prompt: Prompt): Promise<PromptResponse> {
         try {
             const response = await ollama.chat({
-                model: "llama3.2",
+                model: this.version,
                 messages: [{ role: "user", content: prompt.message }],
             });
             return {
@@ -39,7 +44,7 @@ export class Llama implements LLM {
     async *askStream(prompt: Prompt): AsyncGenerator<PromptResponse> {
         try {
             const response = await ollama.chat({
-                model: "llama3.2",
+                model: this.version,
                 messages: [{ role: "user", content: prompt.message }],
                 stream: true,
             });
@@ -68,6 +73,7 @@ export class Llama implements LLM {
                     throw new Error("Invalid role");
             }
         };
+        const version = this.version;
         const streamResponse = await this.chatterLLMTemplate.chatStream(
             this.llmName,
             prompt,
@@ -89,7 +95,7 @@ export class Llama implements LLM {
                     });
 
                     const response = await ollama.chat({
-                        model: "llama3.2",
+                        model: version,
                         messages: messages,
                         stream: true,
                     });

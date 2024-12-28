@@ -16,24 +16,29 @@ import { ChatterLLMTemplate } from "./chatter-llm-template";
 //   apiKey: apiKey,
 // });
 
+export const CHATGPT_VERSIONS = ["gpt-4o"];
+export const CHATGPT_DEFAULT_VERSION = "gpt-4o";
+
 export class ChatGPT implements LLM {
     private llmName = LLMEnum.CHATGPT;
     private client: OpenAI;
     private chatterLLMTemplate: ChatterLLMTemplate;
+    private readonly version: string;
 
-    constructor(repo: Repo) {
+    constructor(repo: Repo, version: string) {
         const apiKey = process.env.CHATGPT_API_KEY;
         this.client = new OpenAI({
             apiKey: apiKey,
         });
         this.chatterLLMTemplate = new ChatterLLMTemplate(repo);
+        this.version = version;
     }
 
     async ask(prompt: Prompt): Promise<PromptResponse> {
         try {
             const chatCompletion = await this.client.chat.completions.create({
                 messages: [{ role: "user", content: prompt.message }],
-                model: "gpt-4o",
+                model: this.version,
             });
             if (
                 chatCompletion.choices.length === 0 ||
@@ -54,7 +59,7 @@ export class ChatGPT implements LLM {
         try {
             const stream = await this.client.chat.completions.create({
                 messages: [{ role: "user", content: prompt.message }],
-                model: "gpt-4o",
+                model: this.version,
                 stream: true,
             });
             for await (const completion of stream) {
@@ -89,6 +94,7 @@ export class ChatGPT implements LLM {
                     throw new Error("Invalid role");
             }
         };
+        const version = this.version;
         const streamResponse = await this.chatterLLMTemplate.chatStream(
             this.llmName,
             prompt,
@@ -111,7 +117,7 @@ export class ChatGPT implements LLM {
 
                     const stream = await client.chat.completions.create({
                         messages: messages,
-                        model: "gpt-4o",
+                        model: version,
                         stream: true,
                     });
                     for await (const completion of stream) {
