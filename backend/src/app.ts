@@ -4,10 +4,10 @@ import { PromptRole } from "./types/prompt";
 import { Repo } from "./db/repo";
 import { LLMFactory } from "./llms/factory";
 import { LLMEnum } from "./types/llm";
-import { CHATGPT_VERSIONS } from "./llms/chat-gpt";
-import { GEMINI_VERSIONS } from "./llms/gemini";
-import { LLAMA_VERSIONS } from "./llms/llama";
-import { CLAUDE_VERSIONS } from "./llms/claude";
+import { CHATGPT_DEFAULT_VERSION, CHATGPT_VERSIONS } from "./llms/chat-gpt";
+import { GEMINI_DEFAULT_VERSION, GEMINI_VERSIONS } from "./llms/gemini";
+import { LLAMA_DEFAULT_VERSION, LLAMA_VERSIONS } from "./llms/llama";
+import { CLAUDE_DEFAULT_VERSION, CLAUDE_VERSIONS } from "./llms/claude";
 require("dotenv").config();
 const cors = require("cors");
 
@@ -121,27 +121,39 @@ app.post(
     }),
 );
 
-app.get("/supported-llms", async (req, res) => {
-    const supportedLLMs = [
+app.get("/models", async (req, res) => {
+    const models = [
         {
             name: LLMEnum.CHATGPT,
+            displayName: "ChatGPT",
             versions: CHATGPT_VERSIONS,
+            defaultVersion: CHATGPT_DEFAULT_VERSION,
+            isSelectedByDefault: true,
         },
         {
             name: LLMEnum.GEMINI,
+            displayName: "Gemini",
             versions: GEMINI_VERSIONS,
+            defaultVersion: GEMINI_DEFAULT_VERSION,
+            isSelectedByDefault: true,
         },
         {
             name: LLMEnum.LLAMA,
+            displayName: "Llama",
             versions: LLAMA_VERSIONS,
+            defaultVersion: LLAMA_DEFAULT_VERSION,
+            isSelectedByDefault: true,
         },
         {
             name: LLMEnum.CLAUDE,
+            displayName: "Claude",
             versions: CLAUDE_VERSIONS,
+            defaultVersion: CLAUDE_DEFAULT_VERSION,
+            isSelectedByDefault: true,
         },
     ];
 
-    res.json({ supportedLLMs });
+    res.json({ models });
 
     res.end();
 });

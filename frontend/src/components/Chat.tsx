@@ -37,6 +37,7 @@ interface Message {
 
 interface ChatProps {
     llmName: string;
+    llmVersion: string;
     initialPrompt: string;
 }
 
@@ -63,6 +64,7 @@ async function streamChat(
     setMessages: (f: (prev: Message[]) => Message[]) => void,
     prompt: string,
     llm: string,
+    llmVersion: string,
     chatID?: string,
 ) {
     console.log("streaming chat...");
@@ -71,6 +73,7 @@ async function streamChat(
         method: "POST",
         body: JSON.stringify({
             llm: llm,
+            llmVersion: llmVersion,
             prompt: prompt,
             chatID: chatID,
         }),
@@ -142,7 +145,7 @@ async function streamChat(
     console.log("stream done");
 }
 
-export const Chat = ({ llmName, initialPrompt }: ChatProps) => {
+export const Chat = ({ llmName, llmVersion, initialPrompt }: ChatProps) => {
     const [messages, setMessages] = React.useState<Message[]>([]);
     const [prompt, setPrompt] = React.useState("");
     const [chatID, setChatID] = React.useState<string | undefined>(undefined);
@@ -165,7 +168,7 @@ export const Chat = ({ llmName, initialPrompt }: ChatProps) => {
                 },
             ];
         });
-        streamChat(setChatID, setMessages, msg, llmName, chatID);
+        streamChat(setChatID, setMessages, msg, llmName, llmVersion, chatID);
     };
 
     React.useEffect(() => {
@@ -309,6 +312,17 @@ export const Chat = ({ llmName, initialPrompt }: ChatProps) => {
         );
     }, [messages, prompt]);
 
+    const LLMDisplayName = () => {
+        return (
+            <Typography variant="h5" textTransform="uppercase">
+                {llmName}
+                <Typography variant="subtitle2" color="textSecondary">
+                    {llmVersion}
+                </Typography>
+            </Typography>
+        );
+    };
+
     return (
         <Box>
             <Card sx={{ padding: 2, overflowX: "scroll" }}>
@@ -318,9 +332,7 @@ export const Chat = ({ llmName, initialPrompt }: ChatProps) => {
                     justifyContent="space-between"
                     alignItems="center"
                 >
-                    <Typography variant="h5" textTransform="uppercase">
-                        {llmName}
-                    </Typography>
+                    <LLMDisplayName />
                     <IconButton onClick={() => setOpen(true)}>
                         <FullscreenIcon />
                     </IconButton>
@@ -335,9 +347,7 @@ export const Chat = ({ llmName, initialPrompt }: ChatProps) => {
                 maxWidth="md"
             >
                 <DialogTitle>
-                    <Typography variant="h5" textTransform="uppercase">
-                        {llmName}
-                    </Typography>
+                    <LLMDisplayName />
                 </DialogTitle>
                 <DialogContent>{content}</DialogContent>
                 <CardActions>

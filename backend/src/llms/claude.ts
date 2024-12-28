@@ -7,7 +7,10 @@ import { ChatterLLMTemplate } from "./chatter-llm-template";
 import { LLM } from "./llm.interface";
 import Anthropic from "@anthropic-ai/sdk";
 
-export const CLAUDE_VERSIONS = ["claude-3-5-sonnet-20240620"];
+export const CLAUDE_VERSIONS = [
+    "claude-3-5-sonnet-20240620",
+    "claude-3-opus-20240229",
+];
 export const CLAUDE_DEFAULT_VERSION = "claude-3-5-sonnet-20240620";
 
 // todo: fix code duplication

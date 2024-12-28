@@ -2,12 +2,17 @@
 import React, { useState } from "react";
 import { TextField, Button, Box, IconButton } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
+import BallotOutlinedIcon from "@mui/icons-material/BallotOutlined";
 
 interface PromptInputProps {
+    showModelSelector: () => void;
     onSubmit: (prompt: string) => void;
 }
 
-const PromptInput: React.FC<PromptInputProps> = ({ onSubmit }) => {
+const PromptInput: React.FC<PromptInputProps> = ({
+    showModelSelector,
+    onSubmit,
+}) => {
     const [prompt, setPrompt] = useState("");
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -44,9 +49,9 @@ const PromptInput: React.FC<PromptInputProps> = ({ onSubmit }) => {
                 onKeyDown={handleMessageBoxKeyDown}
             />
             <Box mt={2} position="absolute" right="5px" bottom="5px">
-                {/* <Button variant="contained" color="primary" type="submit">
-                    Submit
-                </Button> */}
+                <IconButton onClick={showModelSelector}>
+                    <BallotOutlinedIcon />
+                </IconButton>
                 <IconButton type="submit">
                     <SendIcon />
                 </IconButton>
