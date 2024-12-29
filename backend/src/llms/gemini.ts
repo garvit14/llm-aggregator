@@ -15,7 +15,7 @@ import {
 import { Readable } from "stream";
 import { ChatterLLMTemplate } from "./chatter-llm-template";
 
-export const GEMINI_VERSIONS = ["gemini-1.5-pro"];
+export const GEMINI_VERSIONS = ["gemini-1.5-pro", "gemini-2.0-flash-exp"];
 export const GEMINI_DEFAULT_VERSION = "gemini-1.5-pro";
 
 export class Gemini implements LLM {

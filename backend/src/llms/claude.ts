@@ -113,7 +113,7 @@ export class Claude implements LLM {
                         model: version,
                         messages: messages,
                         stream: true,
-                        max_tokens: 8192,
+                        max_tokens: 4096,
                     });
                     for await (const chunk of response) {
                         if (chunk.type === "content_block_delta") {
