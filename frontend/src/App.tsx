@@ -11,6 +11,7 @@ import {
 import { Chat } from "./components/Chat";
 import Grid from "@mui/material/Grid2";
 import ModelSelector, { Model, ModelVersion } from "./components/ModelSelector";
+import { LocalStorageManager } from "./common/LocalStorageManager";
 
 // const llms = ["chatgpt", "claude", "gemini", "llama"];
 // const llms = ["llama"];
@@ -60,8 +61,8 @@ const App: React.FC = () => {
     const [initialPrompt, setInitialPrompt] = useState<string>("");
     const [shouldShowModelSelector, setShouldShowModelSelector] =
         useState<boolean>(false);
-    // TODO: store this in local storage
     const [models, setModels] = useState<Model[]>([]);
+    const [areModelsFetched, setAreModelsFetched] = useState<boolean>(false);
     const handlePromptSubmit = async (prompt: string) => {
         setInitialPrompt(prompt);
     };
@@ -85,8 +86,48 @@ const App: React.FC = () => {
         [models],
     );
 
+    // whenever models are updated store them in local storage
     useEffect(() => {
-        getModels().then((mdls) => setModels(mdls));
+        if (!areModelsFetched) {
+            return;
+        }
+        console.log("Storing selected models in local storage");
+        console.log(models);
+        const selectedModels: Record<string, Record<string, boolean>> = {};
+        models.forEach((model) => {
+            if (!selectedModels[model.name]) {
+                selectedModels[model.name] = {};
+            }
+            model.versions.forEach((version) => {
+                selectedModels[model.name][version.version] =
+                    version.isSelected;
+            });
+        });
+        console.log(selectedModels);
+        LocalStorageManager.setSelectedModels(selectedModels);
+    }, [models]);
+
+    useEffect(() => {
+        getModels().then((fetchedModels) => {
+            // fetch selected models from local storage
+            const selectedModels = LocalStorageManager.getSelectedModels();
+            console.log("Selected models from local storage", selectedModels);
+            fetchedModels.forEach((model) => {
+                // if any version of the model is selected, select the model
+                const isModelSelected = Object.values(
+                    selectedModels[model.name] ?? {},
+                ).reduce((x, agg) => x || agg, false);
+                console.log(model.name, "isModelSelected", isModelSelected);
+                model.isSelected = isModelSelected;
+
+                model.versions.forEach((version) => {
+                    version.isSelected =
+                        selectedModels[model.name]?.[version.version] ?? false;
+                });
+            });
+            setModels(fetchedModels);
+            setAreModelsFetched(true);
+        });
     }, []);
 
     return (

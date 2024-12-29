@@ -52,6 +52,15 @@ const ModelSelector: React.FC<ModelSelectorProps> = ({
         event: React.ChangeEvent<HTMLInputElement>,
     ) => {
         model.isSelected = event.target.checked;
+        // deselect all version if model is deselected
+        if (!model.isSelected) {
+            model.versions.forEach((v) => (v.isSelected = false));
+        }
+
+        // select any one version if model is selected
+        if (model.isSelected) {
+            model.versions[0].isSelected = true;
+        }
         setModels([...models]);
     };
 
