@@ -8,6 +8,8 @@ import {
     CheckboxProps,
     FormControlLabel,
     Stack,
+    Button,
+    CardActions,
 } from "@mui/material";
 import React from "react";
 
@@ -118,6 +120,9 @@ const ModelSelector: React.FC<ModelSelectorProps> = ({
                     return renderModel(model);
                 })}
             </DialogContent>
+            <CardActions>
+                <Button onClick={onClose}>Done</Button>
+            </CardActions>
         </Dialog>
     );
 };
